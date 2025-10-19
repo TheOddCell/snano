@@ -1,6 +1,12 @@
 #!/bin/sh
 tmp=$(mktemp) || exit 1
 trap 'rm -f "$tmp"' EXIT
+if [ "$3" = "install" ]; then
+  mkdir -p  /usr/local/bin/
+  cp   "$0" /usr/local/bin/snano
+fi;if [ "$3" = "uninstall" ]; then
+  rm /usr/local/bin/snano
+fi
 
 file="$1"
 recipient="$2"
