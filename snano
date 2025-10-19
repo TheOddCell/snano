@@ -4,8 +4,10 @@ trap 'rm -f "$tmp"' EXIT
 if [ "$3" = "install" ]; then
   mkdir -p  /usr/local/bin/
   cp   "$0" /usr/local/bin/snano
+  exit
 fi;if [ "$3" = "uninstall" ]; then
   rm /usr/local/bin/snano
+  exit
 fi
 
 file="$1"
