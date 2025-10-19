@@ -1,0 +1,29 @@
+#!/bin/sh
+tmp=$(mktemp) || exit 1
+trap 'rm -f "$tmp"' EXIT
+
+file="$1"
+recipient="$2"
+if [ -z "$file" ]; then
+  echo "Usage: snano <file> [recipient]" >&2
+  exit 1
+fi
+if [ -z "$recipient" ]; then
+  recipient=$(gpg --list-secret-keys --with-colons | awk -F: '/^uid/ {print $10; exit}')
+  if [ -z "$recipient" ]; then
+    echo "Please provide a recipient user ID." >&2
+    exit 1
+  fi
+fi
+case "$file" in
+  *.gpg) encfile="$file" ;;
+  *) encfile="$file.gpg" ;;
+esac
+if [ -f "$encfile" ]; then
+  gpg --batch --yes --decrypt -o "$tmp" "$encfile" || exit 1
+else
+  cp "$file" "$tmp" 2>/dev/null || true
+fi
+nano "$tmp"
+gpg --batch --yes -se -r "$recipient" -o "$encfile" "$tmp"
+
